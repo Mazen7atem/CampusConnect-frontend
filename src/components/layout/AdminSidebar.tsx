@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Dumbbell
+  Dumbbell,
+  Trophy
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, AdminRole } from '@/contexts/AuthContext';
@@ -28,11 +29,15 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, labelKey: 'nav_dashboard', path: '/dashboard', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
+  // Events Admin items
   { icon: Calendar, labelKey: 'nav_events', path: '/events', permissions: ['system_admin', 'event_room_admin'] },
   { icon: BookOpen, labelKey: 'nav_sessions', path: '/sessions', permissions: ['system_admin', 'event_room_admin'] },
-  { icon: Building2, labelKey: 'nav_facilities', path: '/facilities', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
-  { icon: Users, labelKey: 'nav_students', path: '/students', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
+  { icon: Building2, labelKey: 'nav_facilities', path: '/facilities', permissions: ['system_admin', 'event_room_admin'] },
   { icon: Dumbbell, labelKey: 'nav_clubs', path: '/clubs', permissions: ['system_admin', 'event_room_admin'] },
+  // Sports Admin items
+  { icon: Trophy, labelKey: 'nav_sports', path: '/sports', permissions: ['system_admin', 'sports_admin'] },
+  // Shared items
+  { icon: Users, labelKey: 'nav_students', path: '/students', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
   { icon: FileText, labelKey: 'nav_reports', path: '/reports', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
   { icon: Bell, labelKey: 'nav_notifications', path: '/notifications', permissions: ['system_admin', 'event_room_admin', 'sports_admin'] },
   { icon: Settings, labelKey: 'nav_settings', path: '/settings', permissions: ['system_admin'] },

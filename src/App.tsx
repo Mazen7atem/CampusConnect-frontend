@@ -14,6 +14,7 @@ import Sessions from "@/pages/Sessions";
 import Facilities from "@/pages/Facilities";
 import Students from "@/pages/Students";
 import Clubs from "@/pages/Clubs";
+import Sports from "@/pages/Sports";
 import Reports from "@/pages/Reports";
 import Notifications from "@/pages/Notifications";
 import Settings from "@/pages/Settings";
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/facilities" element={<Facilities />} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/clubs" element={<Clubs />} />
+                <Route path="/sports" element={<Sports />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />

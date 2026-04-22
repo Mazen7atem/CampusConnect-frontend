@@ -51,6 +51,7 @@ export const translations = {
     nav_reports: 'Reports & Logs',
     nav_notifications: 'Notifications',
     nav_settings: 'Settings',
+    nav_sports: 'Sports',
     nav_profile: 'Profile',
     
     // Dashboard
@@ -84,6 +85,11 @@ export const translations = {
     all_events: 'All Events',
     pending_approval: 'Pending Approval',
     past_events: 'Past Events',
+    
+    // Sports
+    sports_management: 'Sports Management',
+    sports_events: 'Sports Events',
+    new_sports_event: 'New Sports Event',
     
     // Sessions
     sessions_management: 'Sessions Management',
@@ -211,6 +217,7 @@ export const translations = {
     nav_reports: 'التقارير والسجلات',
     nav_notifications: 'الإشعارات',
     nav_settings: 'الإعدادات',
+    nav_sports: 'الرياضة',
     nav_profile: 'الملف الشخصي',
     
     // Dashboard
@@ -244,6 +251,11 @@ export const translations = {
     all_events: 'جميع الفعاليات',
     pending_approval: 'في انتظار الموافقة',
     past_events: 'الفعاليات السابقة',
+    
+    // Sports
+    sports_management: 'إدارة الرياضة',
+    sports_events: 'الأحداث الرياضية',
+    new_sports_event: 'حدث رياضي جديد',
     
     // Sessions
     sessions_management: 'إدارة الجلسات',
