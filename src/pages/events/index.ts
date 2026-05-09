@@ -1,0 +1,1 @@
+export { EventsQueuePage } from './EventsQueuePage';

@@ -1,0 +1,1 @@
+export { AttendanceChartWidget } from './AttendanceChartWidget';

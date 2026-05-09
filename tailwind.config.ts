@@ -59,6 +59,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        surface: "hsl(var(--surface))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -76,6 +77,13 @@ export default {
           black: "hsl(var(--ejust-black))",
           white: "hsl(var(--ejust-white))",
         },
+        // Corporate Modern design tokens
+        'campus-primary': '#002045',
+        'campus-primary-container': '#1a365d',
+        'campus-gold': '#ffc250',
+        'campus-bg': '#f7f9fb',
+        'campus-surface': '#ffffff',
+        'campus-on-surface-variant': '#43474e',
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
