@@ -20,6 +20,16 @@ export interface CreateFacilityPayload {
   status?: 'available' | 'closed' | 'under_maintenance';
 }
 
+export interface UpdateFacilityPayload {
+  id: number;
+  name?: string;
+  location?: string;
+  min_capacity?: number;
+  max_capacity?: number;
+  type?: string;
+  status?: 'available' | 'closed' | 'under_maintenance';
+}
+
 // ─── Injected Endpoints ──────────────────────────────────────────────
 const facilityApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -38,10 +48,21 @@ const facilityApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Facility'],
     }),
+
+    /** PATCH /api/facilities/:id — admin only */
+    updateFacility: builder.mutation<void, UpdateFacilityPayload>({
+      query: ({ id, ...body }) => ({
+        url: `api/facilities/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Facility'],
+    }),
   }),
 });
 
 export const {
   useGetFacilitiesQuery,
   useCreateFacilityMutation,
+  useUpdateFacilityMutation,
 } = facilityApi;

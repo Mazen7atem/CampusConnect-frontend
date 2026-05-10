@@ -12,6 +12,7 @@ import {
   useCreateRoomMutation,
   useGetResourcesQuery,
   useCreateResourceMutation,
+  useUpdateRoomMutation,
 } from '@/entities/room';
 import type { CreateRoomPayload, CreateResourcePayload } from '@/entities/room';
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,9 @@ export const RoomManagementPage = () => {
   const { data: resources = [] } = useGetResourcesQuery();
   const [createRoom, { isLoading: isCreatingRoom }] = useCreateRoomMutation();
   const [createResource, { isLoading: isCreatingResource }] = useCreateResourceMutation();
+  const [updateRoom] = useUpdateRoomMutation();
+
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   // Create room dialog
   const [roomDialogOpen, setRoomDialogOpen] = useState(false);
@@ -66,6 +70,19 @@ export const RoomManagementPage = () => {
   const [resourceForm, setResourceForm] = useState<CreateResourcePayload>({
     name: '',
   });
+
+  // ── Toggle availability ────────────────────────────────────────────
+  const handleToggleAvailability = async (id: number, current: boolean) => {
+    setTogglingId(id);
+    try {
+      await updateRoom({ id, is_available: !current }).unwrap();
+      toast.success(`Room marked as ${!current ? 'available' : 'unavailable'}`);
+    } catch {
+      toast.error('Failed to update room availability');
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   // ── Toggle resource selection ──────────────────────────────────────
   const toggleResource = (id: number) => {
@@ -179,6 +196,7 @@ export const RoomManagementPage = () => {
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hours</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resources</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Availability</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
@@ -205,6 +223,20 @@ export const RoomManagementPage = () => {
                             )}
                           </div>
                         </td>
+                        <td className="px-4 py-3.5 text-right">
+                           <Button
+                             variant={room.status === 'available' ? 'outline' : 'secondary'}
+                             size="sm"
+                             disabled={togglingId === room.id}
+                             onClick={() => handleToggleAvailability(room.id, room.status === 'available')}
+                             className="gap-1.5 text-xs"
+                           >
+                             {togglingId === room.id ? (
+                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                             ) : null}
+                             {room.status === 'available' ? 'Mark Unavailable' : 'Mark Available'}
+                           </Button>
+                         </td>
                       </tr>
                     ))}
                   </tbody>

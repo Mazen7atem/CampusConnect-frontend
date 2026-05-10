@@ -3,6 +3,7 @@ export {
   useLazySearchStudentsQuery,
   useCreateUserMutation,
   useBanUserMutation,
+  useUnbanUserMutation,
 } from './api/userApi';
 
 export type {

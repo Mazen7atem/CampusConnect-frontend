@@ -4,18 +4,24 @@ import {
   MapPin,
   Users as UsersIcon,
   Clock,
-  Eye,
   CheckCircle2,
   XCircle,
   Loader2,
   AlertCircle,
   RefreshCw,
+  DoorOpen,
+  CalendarCheck,
+  CalendarX,
+  Building2,
 } from 'lucide-react';
 import {
+  useGetApprovedEventsQuery,
   useGetPendingEventsQuery,
   useReviewEventMutation,
 } from '@/entities/event';
-import type { Event } from '@/entities/event';
+import type { PendingEvent, ApprovedEvent } from '@/entities/event';
+import { useGetRoomsQuery } from '@/entities/room';
+import type { Room } from '@/entities/room';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -26,13 +32,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-
-// ─── Status Badge Variant Map ────────────────────────────────────────
-const statusVariant: Record<Event['status'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  pending: 'secondary',
-  approved: 'default',
-  rejected: 'destructive',
-};
 
 // ─── Skeleton Loader ─────────────────────────────────────────────────
 const TableSkeleton = () => (
@@ -52,120 +51,166 @@ const TableSkeleton = () => (
   </div>
 );
 
-// ─── Review Dialog ───────────────────────────────────────────────────
+// ─── Review Dialog (Pending → Approve or Reject) ──────────────────────
 interface ReviewDialogProps {
-  event: Event | null;
+  event: PendingEvent | null;
   open: boolean;
   onClose: () => void;
 }
 
 const ReviewDialog = ({ event, open, onClose }: ReviewDialogProps) => {
   const [reviewEvent, { isLoading }] = useReviewEventMutation();
-  const [rejectionReason, setRejectionReason] = useState('');
-  const [showRejectInput, setShowRejectInput] = useState(false);
+  const { data: rooms = [], isLoading: roomsLoading } = useGetRoomsQuery();
+
+  const [selectedRoomId, setSelectedRoomId] = useState<string>('');
+  const [confirmReject, setConfirmReject] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!event) return null;
 
+  const handleClose = () => {
+    setSelectedRoomId('');
+    setConfirmReject(false);
+    setError(null);
+    onClose();
+  };
+
   const handleApprove = async () => {
+    if (!selectedRoomId) {
+      setError('Please select a room before approving.');
+      return;
+    }
+    setError(null);
     try {
-      await reviewEvent({ event_id: event.id, status: 'approved' }).unwrap();
-      onClose();
+      await reviewEvent({
+        event_id: event.event_id,
+        status: 'approved',
+        room_id: selectedRoomId,
+      }).unwrap();
+      handleClose();
     } catch {
-      // Error handling via RTK Query — 401 auto-logout is handled by baseQuery
+      setError('Failed to approve the event. Please try again.');
     }
   };
 
   const handleReject = async () => {
-    if (!showRejectInput) {
-      setShowRejectInput(true);
+    if (!confirmReject) {
+      setConfirmReject(true);
       return;
     }
+    setError(null);
     try {
       await reviewEvent({
-        event_id: event.id,
+        event_id: event.event_id,
         status: 'rejected',
-        reason: rejectionReason || undefined,
       }).unwrap();
-      setRejectionReason('');
-      setShowRejectInput(false);
-      onClose();
+      handleClose();
     } catch {
-      // Error handled by baseQuery
+      setError('Failed to reject the event. Please try again.');
     }
   };
 
-  const handleClose = () => {
-    setShowRejectInput(false);
-    setRejectionReason('');
-    onClose();
+  const formatDT = (s: string) => {
+    try {
+      return new Date(s).toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+    } catch {
+      return s;
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="secondary" className="capitalize text-xs">
+              {event.type}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              {event.club_name}
+            </Badge>
+          </div>
           <DialogTitle className="text-xl">{event.title}</DialogTitle>
-          <DialogDescription>
-            Review the event details below and approve or reject.
-          </DialogDescription>
+          <DialogDescription>{event.description}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Description */}
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {event.description}
-          </p>
-
-          {/* Details Grid */}
+        <div className="space-y-4 py-2">
+          {/* Time & Capacity */}
           <div className="grid grid-cols-2 gap-3">
-            <DetailItem icon={UsersIcon} label="Club" value={event.club} />
-            <DetailItem icon={UsersIcon} label="Organizer" value={event.organizer} />
-            <DetailItem icon={CalendarClock} label="Date" value={event.date} />
-            <DetailItem icon={Clock} label="Time" value={event.time} />
-            <DetailItem icon={MapPin} label="Location" value={event.location} />
-            {event.attendees !== undefined && (
-              <DetailItem
-                icon={UsersIcon}
-                label="Expected"
-                value={`${event.attendees} attendees`}
-              />
+            <DetailItem
+              icon={Clock}
+              label="Start"
+              value={formatDT(event.start_time)}
+            />
+            <DetailItem
+              icon={Clock}
+              label="End"
+              value={formatDT(event.end_time)}
+            />
+            <DetailItem
+              icon={UsersIcon}
+              label="Max Registrations"
+              value={String(event.max_registerations)}
+            />
+          </div>
+
+          {/* Room Selector — shown always, required for approval */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="room-select"
+              className="text-sm font-medium flex items-center gap-1.5"
+            >
+              <DoorOpen className="h-4 w-4 text-muted-foreground" />
+              Assign Room
+              <span className="text-xs text-muted-foreground font-normal">
+                (required to approve)
+              </span>
+            </label>
+            {roomsLoading ? (
+              <div className="h-9 rounded-md bg-muted animate-pulse" />
+            ) : (
+              <select
+                id="room-select"
+                value={selectedRoomId}
+                onChange={(e) => {
+                  setSelectedRoomId(e.target.value);
+                  setError(null);
+                }}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">— Select a room —</option>
+                {rooms.map((room: Room) => (
+                  <option key={room.id} value={String(room.id)}>
+                    Room {room.room_number} — {room.building_name}
+                    {room.capacity ? ` (cap. ${room.capacity})` : ''}
+                  </option>
+                ))}
+              </select>
             )}
           </div>
 
-          {/* Status */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Status:</span>
-            <Badge variant={statusVariant[event.status]} className="capitalize">
-              {event.status}
-            </Badge>
-          </div>
-
-          {/* Reject reason input */}
-          {showRejectInput && (
-            <div className="space-y-2 animate-fade-in">
-              <label
-                htmlFor="rejection-reason"
-                className="text-sm font-medium"
-              >
-                Rejection Reason (optional)
-              </label>
-              <textarea
-                id="rejection-reason"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Explain why this event is being rejected..."
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[80px] resize-none"
-              />
+          {/* Rejection confirmation notice */}
+          {confirmReject && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              Click <strong>Confirm Reject</strong> again to permanently reject
+              this event. This cannot be undone.
             </div>
+          )}
+
+          {/* Inline error */}
+          {error && (
+            <p className="flex items-center gap-1.5 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
+            </p>
           )}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button
@@ -174,27 +219,25 @@ const ReviewDialog = ({ event, open, onClose }: ReviewDialogProps) => {
             disabled={isLoading}
             className="gap-2"
           >
-            {isLoading ? (
+            {isLoading && !selectedRoomId ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <XCircle className="h-4 w-4" />
             )}
-            {showRejectInput ? 'Confirm Reject' : 'Reject'}
+            {confirmReject ? 'Confirm Reject' : 'Reject'}
           </Button>
-          {!showRejectInput && (
-            <Button
-              onClick={handleApprove}
-              disabled={isLoading}
-              className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="h-4 w-4" />
-              )}
-              Approve
-            </Button>
-          )}
+          <Button
+            onClick={handleApprove}
+            disabled={isLoading || !selectedRoomId}
+            className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+          >
+            {isLoading && !!selectedRoomId ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" />
+            )}
+            Approve
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -222,177 +265,315 @@ const DetailItem = ({
   </div>
 );
 
+// ─── Pending Events Tab ───────────────────────────────────────────────
+const PendingTab = () => {
+  const { data: events, isLoading, isError, refetch } = useGetPendingEventsQuery();
+  const [selected, setSelected] = useState<PendingEvent | null>(null);
+
+  const formatDT = (s: string) => {
+    try {
+      return new Date(s).toLocaleString(undefined, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+    } catch {
+      return s;
+    }
+  };
+
+  if (isLoading) return <TableSkeleton />;
+
+  if (isError)
+    return (
+      <ErrorState onRetry={refetch} message="Could not fetch pending events." />
+    );
+
+  if (!events || events.length === 0)
+    return (
+      <EmptyState
+        icon={CalendarCheck}
+        title="No pending events"
+        description="All event submissions have been reviewed. Check back later!"
+      />
+    );
+
+  return (
+    <>
+      <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-muted/30">
+                {['Title', 'Club', 'Type', 'Start Time', 'Max Reg.', 'Action'].map(
+                  (col, i) => (
+                    <th
+                      key={col}
+                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground ${
+                        i === 5 ? 'text-right' : 'text-left'
+                      }`}
+                    >
+                      {col}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50">
+              {events.map((event) => (
+                <tr
+                  key={event.event_id}
+                  className="transition-colors hover:bg-muted/20"
+                >
+                  <td className="px-4 py-3.5">
+                    <span className="text-sm font-medium">{event.title}</span>
+                  </td>
+                  <td className="px-4 py-3.5 text-sm">{event.club_name}</td>
+                  <td className="px-4 py-3.5">
+                    <Badge variant="outline" className="capitalize text-xs">
+                      {event.type}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      {formatDT(event.start_time)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <UsersIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      {event.max_registerations}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3.5 text-right">
+                    <Button
+                      size="sm"
+                      onClick={() => setSelected(event)}
+                      className="gap-1.5"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Review
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+          <p className="text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">{events.length}</span>{' '}
+            pending event{events.length !== 1 ? 's' : ''} awaiting review
+          </p>
+        </div>
+      </div>
+
+      <ReviewDialog
+        event={selected}
+        open={!!selected}
+        onClose={() => setSelected(null)}
+      />
+    </>
+  );
+};
+
+// ─── Approved Events Tab ─────────────────────────────────────────────
+const ApprovedTab = () => {
+  const { data: events, isLoading, isError, refetch } = useGetApprovedEventsQuery();
+
+  const formatDT = (s: string) => {
+    try {
+      return new Date(s).toLocaleString(undefined, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+    } catch {
+      return s;
+    }
+  };
+
+  if (isLoading) return <TableSkeleton />;
+
+  if (isError)
+    return (
+      <ErrorState onRetry={refetch} message="Could not fetch approved events." />
+    );
+
+  if (!events || events.length === 0)
+    return (
+      <EmptyState
+        icon={CalendarX}
+        title="No approved events"
+        description="No events have been approved yet."
+      />
+    );
+
+  return (
+    <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b bg-muted/30">
+              {['Title', 'Club', 'Type', 'Start Time', 'Location', 'Registrations'].map(
+                (col) => (
+                  <th
+                    key={col}
+                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
+                    {col}
+                  </th>
+                )
+              )}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/50">
+            {events.map((event) => (
+              <tr
+                key={event.event_id}
+                className="transition-colors hover:bg-muted/20"
+              >
+                <td className="px-4 py-3.5">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{event.title}</span>
+                    <span className="text-xs text-muted-foreground truncate max-w-xs">
+                      {event.description}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="flex items-center gap-2">
+                    {event.club_logo_url && (
+                      <img
+                        src={event.club_logo_url}
+                        alt=""
+                        className="h-6 w-6 rounded-full object-cover bg-muted"
+                        onError={(e) =>
+                          ((e.target as HTMLImageElement).style.display = 'none')
+                        }
+                      />
+                    )}
+                    <span className="text-sm">{event.club_name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <Badge variant="outline" className="capitalize text-xs">
+                    {event.type}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    {formatDT(event.start_time)}
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    {event.location || '—'}
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <UsersIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    {event.regestrations ?? 0} / {event.max_regestrations}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+        <p className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">{events.length}</span>{' '}
+          approved event{events.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ─── Shared Error / Empty States ──────────────────────────────────────
+const ErrorState = ({
+  onRetry,
+  message,
+}: {
+  onRetry: () => void;
+  message: string;
+}) => (
+  <div className="flex flex-col items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 p-12 text-center">
+    <AlertCircle className="h-10 w-10 text-destructive mb-3" />
+    <h3 className="text-lg font-semibold">Failed to load</h3>
+    <p className="text-sm text-muted-foreground mt-1 mb-4">{message}</p>
+    <Button variant="outline" onClick={onRetry} className="gap-2">
+      <RefreshCw className="h-4 w-4" />
+      Retry
+    </Button>
+  </div>
+);
+
+const EmptyState = ({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}) => (
+  <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+    <Icon className="h-12 w-12 text-muted-foreground/40 mb-4" />
+    <h3 className="text-lg font-semibold">{title}</h3>
+    <p className="text-sm text-muted-foreground mt-1">{description}</p>
+  </div>
+);
+
+// ─── Tab type ────────────────────────────────────────────────────────
+type Tab = 'pending' | 'approved';
+
 // ─── Events Queue Page ───────────────────────────────────────────────
 export const EventsQueuePage = () => {
-  const { data: events, isLoading, isError, refetch } = useGetPendingEventsQuery();
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleReview = (event: Event) => {
-    setSelectedEvent(event);
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setSelectedEvent(null);
-  };
+  const [activeTab, setActiveTab] = useState<Tab>('pending');
 
   return (
     <div className="space-y-6">
       {/* ── Page Header ──────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Events Queue</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Review and manage pending event submissions from clubs.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          className="gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <CalendarClock className="h-6 w-6 text-ejust-red" />
+          Events Queue
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Review pending event submissions and browse all approved events.
+        </p>
       </div>
 
-      {/* ── Loading State ────────────────────────────── */}
-      {isLoading && <TableSkeleton />}
+      {/* ── Tabs ─────────────────────────────────────── */}
+      <div className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/30 p-1 w-fit">
+        {(
+          [
+            { id: 'pending' as Tab, label: 'Pending Review', icon: Building2 },
+            { id: 'approved' as Tab, label: 'Approved Events', icon: CalendarCheck },
+          ] as const
+        ).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+              activeTab === id
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+            {label}
+          </button>
+        ))}
+      </div>
 
-      {/* ── Error State ──────────────────────────────── */}
-      {isError && (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 p-12 text-center">
-          <AlertCircle className="h-10 w-10 text-destructive mb-3" />
-          <h3 className="text-lg font-semibold">Failed to load events</h3>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">
-            There was an error fetching the events queue. Please try again.
-          </p>
-          <Button variant="outline" onClick={() => refetch()} className="gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Retry
-          </Button>
-        </div>
-      )}
-
-      {/* ── Data Table ───────────────────────────────── */}
-      {!isLoading && !isError && events && (
-        <>
-          {events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
-              <CalendarClock className="h-12 w-12 text-muted-foreground/40 mb-4" />
-              <h3 className="text-lg font-semibold">No pending events</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                All event submissions have been reviewed. Check back later!
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-muted/30">
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Title
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Club
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Time
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Location
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/50">
-                    {events.map((event) => (
-                      <tr
-                        key={event.id}
-                        className="transition-colors hover:bg-muted/20"
-                      >
-                        <td className="px-4 py-3.5">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium">
-                              {event.title}
-                            </span>
-                            <span className="text-xs text-muted-foreground mt-0.5">
-                              {event.organizer}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <span className="text-sm">{event.club}</span>
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <div className="flex flex-col">
-                            <span className="text-sm">{event.date}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {event.time}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <div className="flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span className="text-sm">{event.location}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <Badge
-                            variant={statusVariant[event.status]}
-                            className="capitalize"
-                          >
-                            {event.status}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3.5 text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleReview(event)}
-                            className="gap-1.5"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            Review
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Table footer with count */}
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
-                <p className="text-xs text-muted-foreground">
-                  Showing{' '}
-                  <span className="font-medium text-foreground">
-                    {events.length}
-                  </span>{' '}
-                  event{events.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* ── Review Dialog ────────────────────────────── */}
-      <ReviewDialog
-        event={selectedEvent}
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-      />
+      {/* ── Tab Content ──────────────────────────────── */}
+      {activeTab === 'pending' && <PendingTab />}
+      {activeTab === 'approved' && <ApprovedTab />}
     </div>
   );
 };

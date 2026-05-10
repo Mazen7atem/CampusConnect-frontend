@@ -5,10 +5,12 @@ import {
   AlertCircle,
   RefreshCw,
   Building2,
+  ToggleLeft,
 } from 'lucide-react';
 import {
   useGetFacilitiesQuery,
   useCreateFacilityMutation,
+  useUpdateFacilityMutation,
 } from '@/entities/facility';
 import type { CreateFacilityPayload } from '@/entities/facility';
 import { Button } from '@/components/ui/button';
@@ -56,9 +58,11 @@ const TableSkeleton = () => (
 export const FacilityManagementPage = () => {
   const { data: facilities, isLoading, isError, refetch } = useGetFacilitiesQuery();
   const [createFacility, { isLoading: isCreating }] = useCreateFacilityMutation();
+  const [updateFacility] = useUpdateFacilityMutation();
 
   // Dialog state
   const [createOpen, setCreateOpen] = useState(false);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [createForm, setCreateForm] = useState<CreateFacilityPayload>({
     name: '',
     location: '',
@@ -67,6 +71,22 @@ export const FacilityManagementPage = () => {
     type: '',
     status: 'available',
   });
+
+  // ── Status Change Handler ─────────────────────────────────────────────
+  const handleStatusChange = async (
+    id: number,
+    status: 'available' | 'closed' | 'under_maintenance'
+  ) => {
+    setUpdatingId(id);
+    try {
+      await updateFacility({ id, status }).unwrap();
+      toast.success('Facility status updated');
+    } catch {
+      toast.error('Failed to update facility status');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   // ── Create Handler ─────────────────────────────────────────────────
   const handleCreate = async (e: FormEvent) => {
@@ -147,6 +167,7 @@ export const FacilityManagementPage = () => {
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Location</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Capacity</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Change Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
@@ -160,6 +181,26 @@ export const FacilityManagementPage = () => {
                           <Badge variant={statusVariant[f.status] ?? 'secondary'} className="capitalize">
                             {statusLabel[f.status] ?? f.status}
                           </Badge>
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <select
+                            value={f.status}
+                            disabled={updatingId === f.facility_id}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                f.facility_id,
+                                e.target.value as 'available' | 'closed' | 'under_maintenance'
+                              )
+                            }
+                            className="rounded-md border border-input bg-background px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+                          >
+                            <option value="available">Available</option>
+                            <option value="closed">Closed</option>
+                            <option value="under_maintenance">Maintenance</option>
+                          </select>
+                          {updatingId === f.facility_id && (
+                            <Loader2 className="inline ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                          )}
                         </td>
                       </tr>
                     ))}
