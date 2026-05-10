@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# CampusConnect Admin Dashboard
 
-## Project info
+CampusConnect is a comprehensive Facility Management System and Administrative Dashboard designed to streamline campus operations. This frontend application provides administrative control over users, clubs, study rooms, and sports facilities, alongside detailed analytics and reporting.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Features
 
-## How can I edit this code?
+- **Role-Based Access Control**: Separate, tailored views for different administrative roles (e.g., Events Admins, Sports Admins).
+- **Facility Management**: Full CRUD operations for managing study rooms and sports facilities.
+- **User & Club Management**: Centralized dashboards to monitor and manage student users and campus clubs.
+- **Analytics Dashboard**: Interactive data visualization widgets (Stats Cards, Attendance Bar Charts, Usage Donut Charts) built with Recharts.
+- **Reports & Activity Logs**: Centralized reports viewer and real-time monitoring of admin activity logs.
 
-There are several ways of editing your application.
+## 🛠 Tech Stack
 
-**Use Lovable**
+This project is built using modern web development standards and follows a structured architectural methodology.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Framework**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) (Radix UI Primitives)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/) & [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) for powerful data caching and state synchronization.
+- **Routing**: [React Router v6](https://reactrouter.com/)
+- **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Charts**: [Recharts](https://recharts.org/)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📦 Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Ensure you have Node.js and npm installed. We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage your Node versions.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1. Clone the repository:
+   ```sh
+   git clone <YOUR_GIT_URL>
+   cd CampusConnect-frontend
+   ```
 
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+
+3. Start the development server:
+   ```sh
+   npm run dev
+   ```
+
+The application will be available at `http://localhost:8080` (or the port specified by Vite in your terminal).
+
+### Build for Production
+
+To create an optimized production build, run:
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm run build
 ```
 
-**Edit a file directly in GitHub**
+## 🏗 Architecture & Best Practices
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Component Design**: UI components are highly modular and built using `shadcn/ui` and standard Tailwind CSS utilities to maintain the EJUST branding and design specifications.
+- **API Integration**: All backend communication is structured through RTK Query API slices, utilizing robust cache invalidation tags to ensure data freshness across the dashboard.
+- **Form Handling**: Complex creation and edit forms utilize `react-hook-form` coupled with `zod` schema validation for a seamless and secure administrative experience.
 
-**Use GitHub Codespaces**
+## 🤝 Contributing
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+When contributing to this repository, please ensure that your changes adhere to the existing folder structure and that new UI elements align with the established design system. Ensure that any new API endpoints are correctly documented and integrated into the RTK Query store.
