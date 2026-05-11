@@ -48,6 +48,6 @@ export const baseApi = createApi({
    * Global tag types for cache invalidation.
    * Extend this array as new feature APIs are added.
    */
-  tagTypes: ['PendingEvents', 'User', 'Club', 'Room', 'Resource', 'Facility', 'Report', 'Log'],
+  tagTypes: ['PendingEvents', 'ApprovedEvents', 'User', 'Club', 'Room', 'Resource', 'Facility', 'Report', 'Log'],
   endpoints: () => ({}),
 });

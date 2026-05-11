@@ -71,6 +71,15 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+
+    /** PATCH /api/users/:id/unban — invalidates ['User'] */
+    unbanUser: builder.mutation<void, string | number>({
+      query: (id) => ({
+        url: `api/users/${id}/unban`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -79,4 +88,5 @@ export const {
   useLazySearchStudentsQuery,
   useCreateUserMutation,
   useBanUserMutation,
+  useUnbanUserMutation,
 } = userApi;

@@ -136,7 +136,7 @@ export const ReportsPage = () => {
                         <td className="px-4 py-3.5 text-sm capitalize">{report.status ?? '—'}</td>
                         <td className="px-4 py-3.5 text-sm text-muted-foreground">
                           {(() => {
-                            const dateVal = report.created_at || report.date || report.report_date;
+                            const dateVal = report.created_at;
                             return dateVal ? new Date(dateVal).toLocaleDateString() : '—';
                           })()}
                         </td>

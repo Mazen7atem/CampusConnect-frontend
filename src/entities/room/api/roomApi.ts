@@ -33,6 +33,18 @@ export interface CreateResourcePayload {
   name: string;
 }
 
+export interface UpdateRoomPayload {
+  id: number;
+  room_number?: number;
+  building_name?: string;
+  capacity?: number;
+  type?: string;
+  start_time?: number;
+  end_time?: number;
+  is_available?: boolean;
+  resources_ids?: number[];
+}
+
 // ─── Injected Endpoints ──────────────────────────────────────────────
 const roomApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -67,6 +79,16 @@ const roomApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Resource'],
     }),
+
+    /** PATCH /api/rooms/:id — admin only */
+    updateRoom: builder.mutation<void, UpdateRoomPayload>({
+      query: ({ id, ...body }) => ({
+        url: `api/rooms/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Room'],
+    }),
   }),
 });
 
@@ -75,4 +97,5 @@ export const {
   useCreateRoomMutation,
   useGetResourcesQuery,
   useCreateResourceMutation,
+  useUpdateRoomMutation,
 } = roomApi;

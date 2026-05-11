@@ -3,6 +3,7 @@ import {
   Search,
   UserPlus,
   ShieldBan,
+  ShieldCheck,
   Loader2,
   AlertCircle,
   RefreshCw,
@@ -12,6 +13,7 @@ import {
   useGetStudentsQuery,
   useLazySearchStudentsQuery,
   useBanUserMutation,
+  useUnbanUserMutation,
   useCreateUserMutation,
 } from '@/entities/user';
 import type { CreateUserPayload } from '@/entities/user';
@@ -69,10 +71,12 @@ export const UserManagementPage = () => {
   const [triggerSearch, { data: searchResults, isFetching: isSearching }] =
     useLazySearchStudentsQuery();
   const [banUser] = useBanUserMutation();
+  const [unbanUser] = useUnbanUserMutation();
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [banningId, setBanningId] = useState<string | null>(null);
+  const [unbanningId, setUnbanningId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<CreateUserPayload>(emptyForm);
 
@@ -91,18 +95,31 @@ export const UserManagementPage = () => {
     }
   };
 
-  // ── Ban Handler ────────────────────────────────────────────────────
+  // ── Ban Handler ────────────────────────────────────────────────
   const handleBan = async (studentId: string) => {
     setBanningId(studentId);
     try {
       await banUser(studentId).unwrap();
       toast.success('User banned successfully');
-      // Table auto-refreshes via invalidatesTags: ['User']
     } catch (error) {
       console.error('[banUser] failed:', error);
       toast.error('Failed to ban user');
     } finally {
       setBanningId(null);
+    }
+  };
+
+  // ── Unban Handler ──────────────────────────────────────────────
+  const handleUnban = async (studentId: string) => {
+    setUnbanningId(studentId);
+    try {
+      await unbanUser(studentId).unwrap();
+      toast.success('User unbanned successfully');
+    } catch (error) {
+      console.error('[unbanUser] failed:', error);
+      toast.error('Failed to unban user');
+    } finally {
+      setUnbanningId(null);
     }
   };
 
@@ -237,20 +254,37 @@ export const UserManagementPage = () => {
                         <td className="px-4 py-3.5 text-sm">{student.reservations}</td>
                         <td className="px-4 py-3.5 text-sm">{student.complaints}</td>
                         <td className="px-4 py-3.5 text-right">
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            disabled={student.status === 'banned' || banningId === student.student_id}
-                            onClick={() => handleBan(student.student_id)}
-                            className="gap-1.5"
-                          >
-                            {banningId === student.student_id ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                              <ShieldBan className="h-3.5 w-3.5" />
-                            )}
-                            Ban
-                          </Button>
+                          {student.status === 'banned' ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={unbanningId === student.student_id}
+                              onClick={() => handleUnban(student.student_id)}
+                              className="gap-1.5 border-green-500 text-green-600 hover:bg-green-50"
+                            >
+                              {unbanningId === student.student_id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                              )}
+                              Unban
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              disabled={banningId === student.student_id}
+                              onClick={() => handleBan(student.student_id)}
+                              className="gap-1.5"
+                            >
+                              {banningId === student.student_id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <ShieldBan className="h-3.5 w-3.5" />
+                              )}
+                              Ban
+                            </Button>
+                          )}
                         </td>
                       </tr>
                     ))}
