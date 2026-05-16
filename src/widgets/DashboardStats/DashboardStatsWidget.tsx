@@ -65,14 +65,14 @@ const cardConfig = [
 
 // ─── Skeleton Card ───────────────────────────────────────────────────
 const SkeletonCard = () => (
-  <div className="rounded-lg border border-slate-200 bg-campus-surface p-6 shadow-sm animate-pulse">
+  <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-level-1 animate-pulse">
     <div className="flex items-center justify-between">
       <div className="space-y-3 flex-1">
-        <div className="h-3 w-24 rounded bg-slate-200" />
-        <div className="h-8 w-16 rounded bg-slate-200" />
-        <div className="h-3 w-32 rounded bg-slate-100" />
+        <div className="h-3 w-24 rounded bg-surface-container-high" />
+        <div className="h-8 w-16 rounded bg-surface-container-high" />
+        <div className="h-3 w-32 rounded bg-surface-container" />
       </div>
-      <div className="h-12 w-12 rounded-lg bg-slate-100" />
+      <div className="h-12 w-12 rounded-lg bg-surface-container" />
     </div>
   </div>
 );
@@ -97,36 +97,35 @@ export const DashboardStatsWidget = () => {
         ({ key, label, icon: Icon, trend, trendUp, trendLabel }) => (
           <div
             key={key}
-            className="group rounded-lg border border-slate-200 bg-campus-surface p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300"
+            className="group rounded-lg border border-outline-variant bg-surface-container-lowest p-5 shadow-level-1 transition-all duration-200 hover:shadow-md hover:border-outline"
           >
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-campus-on-surface-variant uppercase tracking-wider">
+                <p className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">
                   {label}
                 </p>
-                <p className="text-2xl font-bold tracking-tight text-campus-primary">
+                <p className="text-2xl font-bold tracking-tight text-primary">
                   {(stats[key] ?? 0).toLocaleString()}
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffc250]/15 transition-transform duration-200 group-hover:scale-110">
-                <Icon className="h-5 w-5 text-campus-gold" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary-container/15 transition-transform duration-200 group-hover:scale-110">
+                <Icon className="h-5 w-5 text-secondary-container" />
               </div>
             </div>
 
             <div className="mt-3 flex items-center gap-1.5">
               {trendUp ? (
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                <TrendingUp className="h-3.5 w-3.5 text-success" />
               ) : (
-                <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+                <TrendingDown className="h-3.5 w-3.5 text-error" />
               )}
               <span
-                className={`text-xs font-semibold ${
-                  trendUp ? 'text-emerald-600' : 'text-red-600'
-                }`}
+                className={`text-xs font-semibold ${trendUp ? 'text-success' : 'text-error'
+                  }`}
               >
                 {trend}
               </span>
-              <span className="text-xs text-campus-on-surface-variant">
+              <span className="text-xs text-on-surface-variant">
                 {trendLabel}
               </span>
             </div>

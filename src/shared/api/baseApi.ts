@@ -9,7 +9,7 @@ import { logout } from '@/entities/session';
 
 // ─── Base Query with JWT Injection ───────────────────────────────────
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: 'https://campusconnect-backend-production-81cf.up.railway.app/',
+  baseUrl: 'https://campus-connect-backend-three.vercel.app/',
   prepareHeaders: (headers, { getState }) => {
     // Prefer the token from Redux state; fall back to localStorage
     const token =

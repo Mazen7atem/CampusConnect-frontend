@@ -32,7 +32,7 @@ import { toast } from 'sonner';
 const TableSkeleton = () => (
   <div className="space-y-3">
     {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse">
+      <div key={i} className="flex items-center gap-4 rounded-lg border border-outline-variant bg-card p-4 animate-pulse">
         <div className="h-4 w-32 rounded bg-muted" />
         <div className="h-4 w-24 rounded bg-muted" />
         <div className="h-4 w-20 rounded bg-muted" />
@@ -176,7 +176,7 @@ export const RoomManagementPage = () => {
       {!isLoading && !isError && rooms && (
         <>
           {rooms.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-card p-16 text-center">
               <DoorOpen className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold">No rooms found</h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -184,11 +184,11 @@ export const RoomManagementPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+            <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-muted/30">
+                    <tr className="border-b bg-surface-container-low">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Room #</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Building</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Type</th>
@@ -201,7 +201,7 @@ export const RoomManagementPage = () => {
                   </thead>
                   <tbody className="divide-y divide-border/50">
                     {rooms.map((room) => (
-                      <tr key={room.id} className="transition-colors hover:bg-muted/20">
+                      <tr key={room.id} className="transition-colors hover:bg-surface-container-low">
                         <td className="px-4 py-3.5 text-sm font-medium">{room.room_number}</td>
                         <td className="px-4 py-3.5 text-sm">{room.building_name}</td>
                         <td className="px-4 py-3.5 text-sm">{room.type}</td>
@@ -224,25 +224,25 @@ export const RoomManagementPage = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3.5 text-right">
-                           <Button
-                             variant={room.status === 'available' ? 'outline' : 'secondary'}
-                             size="sm"
-                             disabled={togglingId === room.id}
-                             onClick={() => handleToggleAvailability(room.id, room.status === 'available')}
-                             className="gap-1.5 text-xs"
-                           >
-                             {togglingId === room.id ? (
-                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                             ) : null}
-                             {room.status === 'available' ? 'Mark Unavailable' : 'Mark Available'}
-                           </Button>
-                         </td>
+                          <Button
+                            variant={room.status === 'available' ? 'outline' : 'secondary'}
+                            size="sm"
+                            disabled={togglingId === room.id}
+                            onClick={() => handleToggleAvailability(room.id, room.status === 'available')}
+                            className="gap-1.5 text-xs"
+                          >
+                            {togglingId === room.id ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : null}
+                            {room.status === 'available' ? 'Mark Unavailable' : 'Mark Available'}
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+              <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
                 <p className="text-xs text-muted-foreground">
                   Showing <span className="font-medium text-foreground">{rooms.length}</span> room{rooms.length !== 1 ? 's' : ''}
                 </p>
@@ -325,11 +325,10 @@ export const RoomManagementPage = () => {
                         key={resource.resource_id}
                         type="button"
                         onClick={() => toggleResource(resource.resource_id)}
-                        className={`inline-flex items-center rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
-                          isSelected
+                        className={`inline-flex items-center rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${isSelected
                             ? 'bg-primary text-primary-foreground border-primary'
                             : 'bg-background text-foreground border-input hover:bg-muted'
-                        }`}
+                          }`}
                       >
                         {resource.name}
                       </button>

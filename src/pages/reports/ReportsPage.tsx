@@ -22,7 +22,7 @@ const typeVariant: Record<Report['report_type'], 'default' | 'secondary' | 'dest
 const TableSkeleton = () => (
   <div className="space-y-3">
     {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse">
+      <div key={i} className="flex items-center gap-4 rounded-lg border border-outline-variant bg-card p-4 animate-pulse">
         <div className="h-4 w-20 rounded bg-muted" />
         <div className="h-4 w-32 rounded bg-muted" />
         <div className="h-4 w-48 rounded bg-muted" />
@@ -68,11 +68,10 @@ export const ReportsPage = () => {
           <button
             key={t}
             onClick={() => setFilterType(t)}
-            className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors capitalize ${
-              filterType === t
+            className={`inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors capitalize ${filterType === t
                 ? 'bg-primary text-primary-foreground border-primary'
                 : 'bg-background text-foreground border-input hover:bg-muted'
-            }`}
+              }`}
           >
             {t}
           </button>
@@ -101,7 +100,7 @@ export const ReportsPage = () => {
       {!isLoading && !isError && reports && (
         <>
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-card p-16 text-center">
               <FileWarning className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold">No reports found</h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -109,11 +108,11 @@ export const ReportsPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+            <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-muted/30">
+                    <tr className="border-b bg-surface-container-low">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Type</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Student ID</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reason</th>
@@ -124,7 +123,7 @@ export const ReportsPage = () => {
                   </thead>
                   <tbody className="divide-y divide-border/50">
                     {filtered.map((report, idx) => (
-                      <tr key={`${report.report_type}-${report.report_id}-${idx}`} className="transition-colors hover:bg-muted/20">
+                      <tr key={`${report.report_type}-${report.report_id}-${idx}`} className="transition-colors hover:bg-surface-container-low">
                         <td className="px-4 py-3.5">
                           <Badge variant={typeVariant[report.report_type]} className="capitalize">
                             {report.report_type}
@@ -145,7 +144,7 @@ export const ReportsPage = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+              <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
                 <p className="text-xs text-muted-foreground">
                   Showing <span className="font-medium text-foreground">{filtered.length}</span> report{filtered.length !== 1 ? 's' : ''}
                   {filterType !== 'all' && ` (filtered by ${filterType})`}

@@ -43,7 +43,7 @@ const statusLabel: Record<string, string> = {
 const TableSkeleton = () => (
   <div className="space-y-3">
     {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse">
+      <div key={i} className="flex items-center gap-4 rounded-lg border border-outline-variant bg-card p-4 animate-pulse">
         <div className="h-4 w-40 rounded bg-muted" />
         <div className="h-4 w-28 rounded bg-muted" />
         <div className="h-4 w-24 rounded bg-muted" />
@@ -149,7 +149,7 @@ export const FacilityManagementPage = () => {
       {!isLoading && !isError && facilities && (
         <>
           {facilities.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-card p-16 text-center">
               <Building2 className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold">No facilities found</h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -157,11 +157,11 @@ export const FacilityManagementPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+            <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-muted/30">
+                    <tr className="border-b bg-surface-container-low">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Type</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Location</th>
@@ -172,7 +172,7 @@ export const FacilityManagementPage = () => {
                   </thead>
                   <tbody className="divide-y divide-border/50">
                     {facilities.map((f) => (
-                      <tr key={f.facility_id} className="transition-colors hover:bg-muted/20">
+                      <tr key={f.facility_id} className="transition-colors hover:bg-surface-container-low">
                         <td className="px-4 py-3.5 text-sm font-medium">{f.name}</td>
                         <td className="px-4 py-3.5 text-sm capitalize">{f.type}</td>
                         <td className="px-4 py-3.5 text-sm text-muted-foreground">{f.location_description}</td>
@@ -207,7 +207,7 @@ export const FacilityManagementPage = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+              <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
                 <p className="text-xs text-muted-foreground">
                   Showing <span className="font-medium text-foreground">{facilities.length}</span> facilit{facilities.length !== 1 ? 'ies' : 'y'}
                 </p>

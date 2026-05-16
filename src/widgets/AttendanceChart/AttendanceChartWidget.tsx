@@ -23,18 +23,18 @@ const CustomTooltip = ({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-campus-surface px-4 py-3 shadow-lg">
-      <p className="text-xs font-semibold text-campus-primary mb-1.5">{label}</p>
+    <div className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 shadow-level-2">
+      <p className="text-xs font-semibold text-primary mb-1.5">{label}</p>
       {payload.map((entry) => (
         <div key={entry.dataKey} className="flex items-center gap-2">
           <div
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-xs text-campus-on-surface-variant capitalize">
+          <span className="text-xs text-on-surface-variant capitalize">
             {entry.dataKey}:
           </span>
-          <span className="text-xs font-bold text-campus-primary">
+          <span className="text-xs font-bold text-primary">
             {entry.value.toLocaleString()}
           </span>
         </div>
@@ -49,11 +49,11 @@ const ChartSkeleton = () => (
     {Array.from({ length: 6 }).map((_, i) => (
       <div key={i} className="flex-1 flex gap-1">
         <div
-          className="flex-1 animate-pulse rounded-t bg-slate-200"
+          className="flex-1 animate-pulse rounded-t bg-surface-container-high"
           style={{ height: `${30 + Math.random() * 60}%` }}
         />
         <div
-          className="flex-1 animate-pulse rounded-t bg-slate-100"
+          className="flex-1 animate-pulse rounded-t bg-surface-container"
           style={{ height: `${20 + Math.random() * 50}%` }}
         />
       </div>
@@ -66,13 +66,13 @@ export const AttendanceChartWidget = () => {
   const { data: attendance, isLoading } = useGetAttendanceOverviewQuery();
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-campus-surface shadow-sm h-full">
+    <div className="rounded-lg border border-outline-variant bg-surface-container-lowest shadow-level-1 h-full">
       {/* Header */}
-      <div className="border-b border-slate-100 px-6 py-4">
-        <h3 className="text-base font-semibold text-campus-primary">
+      <div className="border-b border-outline-variant px-6 py-4">
+        <h3 className="text-base font-semibold text-primary">
           Attendance Overview
         </h3>
-        <p className="text-sm text-campus-on-surface-variant mt-0.5">
+        <p className="text-sm text-on-surface-variant mt-0.5">
           Monthly event and session participation
         </p>
       </div>

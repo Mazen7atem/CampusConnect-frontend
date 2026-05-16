@@ -39,7 +39,7 @@ const TableSkeleton = () => (
     {Array.from({ length: 5 }).map((_, i) => (
       <div
         key={i}
-        className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse"
+        className="flex items-center gap-4 rounded-lg border border-outline-variant bg-card p-4 animate-pulse"
       >
         <div className="h-4 w-48 rounded bg-muted" />
         <div className="h-4 w-28 rounded bg-muted" />
@@ -299,18 +299,17 @@ const PendingTab = () => {
 
   return (
     <>
-      <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+      <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b bg-muted/30">
+              <tr className="border-b bg-surface-container-low">
                 {['Title', 'Club', 'Type', 'Start Time', 'Max Reg.', 'Action'].map(
                   (col, i) => (
                     <th
                       key={col}
-                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground ${
-                        i === 5 ? 'text-right' : 'text-left'
-                      }`}
+                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground ${i === 5 ? 'text-right' : 'text-left'
+                        }`}
                     >
                       {col}
                     </th>
@@ -322,7 +321,7 @@ const PendingTab = () => {
               {events.map((event) => (
                 <tr
                   key={event.event_id}
-                  className="transition-colors hover:bg-muted/20"
+                  className="transition-colors hover:bg-surface-container-low"
                 >
                   <td className="px-4 py-3.5">
                     <span className="text-sm font-medium">{event.title}</span>
@@ -360,7 +359,7 @@ const PendingTab = () => {
             </tbody>
           </table>
         </div>
-        <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+        <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
           <p className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">{events.length}</span>{' '}
             pending event{events.length !== 1 ? 's' : ''} awaiting review
@@ -409,11 +408,11 @@ const ApprovedTab = () => {
     );
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+    <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b bg-muted/30">
+            <tr className="border-b bg-surface-container-low">
               {['Title', 'Club', 'Type', 'Start Time', 'Location', 'Registrations'].map(
                 (col) => (
                   <th
@@ -430,7 +429,7 @@ const ApprovedTab = () => {
             {events.map((event) => (
               <tr
                 key={event.event_id}
-                className="transition-colors hover:bg-muted/20"
+                className="transition-colors hover:bg-surface-container-low"
               >
                 <td className="px-4 py-3.5">
                   <div className="flex flex-col">
@@ -483,7 +482,7 @@ const ApprovedTab = () => {
           </tbody>
         </table>
       </div>
-      <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+      <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
         <p className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground">{events.length}</span>{' '}
           approved event{events.length !== 1 ? 's' : ''}
@@ -521,7 +520,7 @@ const EmptyState = ({
   title: string;
   description: string;
 }) => (
-  <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+  <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-card p-16 text-center">
     <Icon className="h-12 w-12 text-muted-foreground/40 mb-4" />
     <h3 className="text-lg font-semibold">{title}</h3>
     <p className="text-sm text-muted-foreground mt-1">{description}</p>
@@ -540,7 +539,7 @@ export const EventsQueuePage = () => {
       {/* ── Page Header ──────────────────────────────── */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <CalendarClock className="h-6 w-6 text-ejust-red" />
+          <CalendarClock className="h-6 w-6 text-primary" />
           Events Queue
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
@@ -549,7 +548,7 @@ export const EventsQueuePage = () => {
       </div>
 
       {/* ── Tabs ─────────────────────────────────────── */}
-      <div className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/30 p-1 w-fit">
+      <div className="flex items-center gap-1 rounded-lg border border-outline-variant bg-surface-container-low p-1 w-fit">
         {(
           [
             { id: 'pending' as Tab, label: 'Pending Review', icon: Building2 },
@@ -559,11 +558,10 @@ export const EventsQueuePage = () => {
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === id
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all ${activeTab === id
+                ? 'bg-primary text-primary-foreground shadow-level-1'
+                : 'text-on-surface-variant hover:text-foreground hover:bg-surface-container'
+              }`}
           >
             <Icon className="h-4 w-4" />
             {label}

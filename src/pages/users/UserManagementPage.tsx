@@ -53,7 +53,7 @@ const TableSkeleton = () => (
     {Array.from({ length: 5 }).map((_, i) => (
       <div
         key={i}
-        className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse"
+        className="flex items-center gap-4 rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-level-1 animate-pulse"
       >
         <div className="h-4 w-40 rounded bg-muted" />
         <div className="h-4 w-28 rounded bg-muted" />
@@ -159,7 +159,7 @@ export const UserManagementPage = () => {
             <RefreshCw className="h-4 w-4" />
             Refresh
           </Button>
-          <Button size="sm" onClick={() => setDialogOpen(true)} className="gap-2">
+          <Button size="sm" onClick={() => setDialogOpen(true)} className="gap-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
             <UserPlus className="h-4 w-4" />
             Create User
           </Button>
@@ -207,7 +207,7 @@ export const UserManagementPage = () => {
       {!isLoading && !isError && (
         <>
           {displayedStudents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-surface-container-lowest shadow-level-1 p-16 text-center">
               <Users className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold">No students found</h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -215,11 +215,11 @@ export const UserManagementPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest overflow-hidden shadow-level-1">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-muted/30">
+                    <tr className="border-b bg-surface-container-low">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Faculty</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Major</th>
@@ -233,7 +233,7 @@ export const UserManagementPage = () => {
                     {displayedStudents.map((student) => (
                       <tr
                         key={student.student_id}
-                        className="transition-colors hover:bg-muted/20"
+                        className="transition-colors hover:bg-surface-container-low"
                       >
                         <td className="px-4 py-3.5">
                           <div className="flex flex-col">
@@ -246,7 +246,11 @@ export const UserManagementPage = () => {
                         <td className="px-4 py-3.5">
                           <Badge
                             variant={student.status === 'banned' ? 'destructive' : 'default'}
-                            className="capitalize"
+                            className={`capitalize ${
+                              student.status === 'banned'
+                                ? ''
+                                : 'bg-primary-fixed text-primary-on-fixed hover:bg-primary-fixed/80 rounded-full px-3 py-1 border-transparent'
+                            }`}
                           >
                             {student.status}
                           </Badge>
@@ -275,7 +279,7 @@ export const UserManagementPage = () => {
                               size="sm"
                               disabled={banningId === student.student_id}
                               onClick={() => handleBan(student.student_id)}
-                              className="gap-1.5"
+                              className="gap-1.5 bg-error text-error-foreground rounded hover:bg-error/90"
                             >
                               {banningId === student.student_id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -292,7 +296,7 @@ export const UserManagementPage = () => {
                 </table>
               </div>
 
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+              <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
                 <p className="text-xs text-muted-foreground">
                   Showing{' '}
                   <span className="font-medium text-foreground">{displayedStudents.length}</span>{' '}
@@ -394,7 +398,7 @@ export const UserManagementPage = () => {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isCreating} className="gap-2">
+              <Button type="submit" disabled={isCreating} className="gap-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
                 {isCreating && <Loader2 className="h-4 w-4 animate-spin" />}
                 Create User
               </Button>

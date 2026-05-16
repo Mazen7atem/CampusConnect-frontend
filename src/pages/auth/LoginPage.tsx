@@ -74,14 +74,14 @@ export const LoginPage = () => {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4">
       {/* Decorative background elements */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-ejust-red/5 blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-secondary-container/10 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
-      <Card className="relative w-full max-w-md shadow-2xl border-border/40 animate-scale-in">
+      <Card className="relative w-full max-w-md shadow-level-2 border-outline-variant animate-scale-in">
         <CardHeader className="space-y-4 text-center pb-2">
           {/* Logo */}
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-ejust-red to-ejust-red-dark font-bold text-white text-lg shadow-glow">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container font-bold text-white text-lg shadow-lg">
             CC
           </div>
 
@@ -99,7 +99,7 @@ export const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {error && (
-              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive animate-fade-in">
+              <div className="flex items-start gap-2 rounded-lg border border-error/30 bg-error-container/30 p-3 text-sm text-error animate-fade-in">
                 <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -154,7 +154,7 @@ export const LoginPage = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-11 gap-2 bg-gradient-to-r from-ejust-red to-ejust-red-dark hover:from-ejust-red-dark hover:to-ejust-red text-white shadow-md hover:shadow-glow transition-all duration-300"
+              className="w-full h-11 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all duration-300"
               disabled={isLoading}
             >
               {isLoading ? (

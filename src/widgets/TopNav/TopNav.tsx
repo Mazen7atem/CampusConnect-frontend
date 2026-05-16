@@ -53,7 +53,7 @@ export const TopNav = () => {
           {/* Notifications placeholder */}
           <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
             <Bell className="h-[18px] w-[18px]" />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-ejust-red" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-error" />
           </Button>
 
           <Separator orientation="vertical" className="h-8" />

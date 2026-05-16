@@ -31,7 +31,7 @@ export const Sidebar = () => {
     <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-sidebar text-sidebar-foreground">
       {/* ── Branding ─────────────────────────────────── */}
       <div className="flex h-16 items-center gap-3 px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ejust-red font-bold text-white text-sm">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary-container font-bold text-secondary-container-fg text-sm">
           CC
         </div>
         <div className="flex flex-col">
@@ -57,8 +57,8 @@ export const Sidebar = () => {
                 cn(
                   'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-sidebar-accent text-sidebar-primary shadow-sm'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                    ? 'bg-white/5 border-l-4 border-secondary-container text-white'
+                    : 'border-l-4 border-transparent text-sidebar-foreground/70 hover:bg-white/5 hover:text-sidebar-foreground'
                 )
               }
             >
@@ -68,7 +68,7 @@ export const Sidebar = () => {
                     className={cn(
                       'h-[18px] w-[18px] shrink-0 transition-colors',
                       isActive
-                        ? 'text-ejust-red-light'
+                        ? 'text-secondary-container'
                         : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground/80'
                     )}
                   />

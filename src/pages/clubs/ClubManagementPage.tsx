@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 const TableSkeleton = () => (
   <div className="space-y-3">
     {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 rounded-lg border border-border/50 bg-card p-4 animate-pulse">
+      <div key={i} className="flex items-center gap-4 rounded-lg border border-outline-variant bg-card p-4 animate-pulse">
         <div className="h-4 w-48 rounded bg-muted" />
         <div className="h-4 w-32 rounded bg-muted" />
         <div className="h-4 w-24 rounded bg-muted" />
@@ -171,7 +171,7 @@ export const ClubManagementPage = () => {
       {!isLoading && !isError && clubs && (
         <>
           {clubs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-outline-variant bg-card p-16 text-center">
               <ShieldCheck className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold">No clubs found</h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -179,11 +179,11 @@ export const ClubManagementPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm">
+            <div className="rounded-lg border border-outline-variant bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-muted/30">
+                    <tr className="border-b bg-surface-container-low">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Admin</th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email</th>
@@ -194,7 +194,7 @@ export const ClubManagementPage = () => {
                   </thead>
                   <tbody className="divide-y divide-border/50">
                     {clubs.map((club) => (
-                      <tr key={club.id} className="transition-colors hover:bg-muted/20">
+                      <tr key={club.id} className="transition-colors hover:bg-surface-container-low">
                         <td className="px-4 py-3.5">
                           <span className="text-sm font-medium">{club.name}</span>
                         </td>
@@ -204,7 +204,6 @@ export const ClubManagementPage = () => {
                         <td className="px-4 py-3.5 text-sm">{club.event_number}</td>
                         <td className="px-4 py-3.5 text-right">
                           <Button
-                            variant="outline"
                             size="sm"
                             onClick={() => handleOpenEdit(club.id)}
                             className="gap-1.5"
@@ -218,7 +217,7 @@ export const ClubManagementPage = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="border-t border-border/50 bg-muted/20 px-4 py-2.5">
+              <div className="border-t border-outline-variant bg-surface-container-low px-4 py-2.5">
                 <p className="text-xs text-muted-foreground">
                   Showing <span className="font-medium text-foreground">{clubs.length}</span> club{clubs.length !== 1 ? 's' : ''}
                 </p>
